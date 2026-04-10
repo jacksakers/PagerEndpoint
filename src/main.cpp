@@ -89,10 +89,14 @@ void setup() {
 
     // 5. Initialize RadioLib with settings from the Design Doc
     // Frequency: 915.0 MHz, Bandwidth: 125.0 kHz, SF: 9, CR: 4/7, Sync Word: 0x12
-    int state = radio.begin(915.0, 125.0, 9, 7, 0x12, 10, 8, 0, false);
+    // tcxoVoltage = 1.8V is required for the Heltec V3's SX1262 TCXO to start
+    int state = radio.begin(915.0, 125.0, 9, 7, 0x12, 10, 8, 1.8, false);
     
     if (state == RADIOLIB_ERR_NONE) {
         Serial.println("Radio Initialized Successfully!");
+
+        // Required for Heltec V3: DIO2 controls the RF switch
+        radio.setDio2AsRfSwitch(true);
         
         // Attach the interrupt to the DIO1 pin
         attachInterrupt(digitalPinToInterrupt(LORA_DIO1), setFlag, RISING);
